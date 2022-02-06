@@ -1,6 +1,6 @@
 module.exports = {
     getUsers: ( req, res ) => {
-        res.json('Gett all');
+        res.json('Get all');
     },
 
     getUserById: ( req, res ) => {
@@ -11,5 +11,5 @@ module.exports = {
     createUser: ( req, res ) => {
         console.log(req.body);
         res.json('Create user');
-    }
+    },
 };

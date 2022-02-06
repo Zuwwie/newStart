@@ -13,7 +13,6 @@ const userRouter = require('./routes/user.router');
 
 app.use('/users', userRouter);
 
-
 app.listen(5100, ( () => {
     console.log('app listen 5100');
 } ));

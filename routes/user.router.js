@@ -7,6 +7,6 @@ router.get('/', userController.getUsers);
 
 router.get('/:user_id', userController.getUserById);
 
-router.post('/', userMiddleware.createUserMiddleware, userController.createUser);
+router.post('/', userMiddleware.isUserBodyValid, userMiddleware.createUserMiddleware, userController.createUser);
 
 module.exports = router;

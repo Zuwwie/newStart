@@ -1,5 +1,7 @@
 const User = require('../dataBase/User');
 
+const userValidator = require('../validators/user.validator');
+
 module.exports = {
 
     createUserMiddleware: async ( req, res, next ) => {
@@ -17,13 +19,14 @@ module.exports = {
             next(e);
         }
     },
-    isUserBodyValid: ( req, res, next ) => {
+    isUserBodyValid: async ( req, res, next ) => {
         try {
-            const { name, email, password } = req.body;
-            if(!name || email || password) {
-                throw new Error('Some wrong');
+            const { error, value } = await userValidator.createUserValidator.validate(req.body);
+            if ( error ) {
+                throw new Error(error.details[0].message);
             }
 
+            req.body = value;
 
             next(e);
         } catch (e) {

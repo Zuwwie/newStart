@@ -1,15 +1,43 @@
+const User = require('../dataBase/User');
+const passwordService = require('../service/password.service');
+
 module.exports = {
-    getUsers: ( req, res ) => {
-        res.json('Get all');
+    getUsers: async ( req, res ) => {
+        try {
+            const users = await User.find();
+
+            res.json(users);
+        } catch (e) {
+            // next(e);
+            res.json(e);
+        }
     },
 
-    getUserById: ( req, res ) => {
+    getUserById: async ( req, res ) => {
         console.log(req.params);
-        res.json('yes');
+        const { user_id } = req.params;
+        const user = await User.findById(user_id);
+
+        res.json(user);
     },
 
-    createUser: ( req, res ) => {
-        console.log(req.body);
-        res.json('Create user');
+    createUser: async ( req, res, next ) => {
+        try {
+            console.log(req.body);
+            const password = await passwordService.hash(req.body.password);
+
+            const newUser = await User.create({ ...req.body, password });
+
+            res.json(newUser);
+        } catch (e) {
+            next(e);
+        }
     },
-};
+
+// updateUser: async (req, res) => {
+//     const updateUser = req.body;
+//
+//     res.json(updateUser);
+// }
+}
+;

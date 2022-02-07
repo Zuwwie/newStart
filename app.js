@@ -2,17 +2,18 @@ const express = require('express');
 
 const mongoose = require('mongoose');
 
+const userRouter = require('./routes/user.router');
+const { MONGO_CONNECT_URL, PORT } = require('./configs/config');
+
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/newStart');
+mongoose.connect(MONGO_CONNECT_URL);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const userRouter = require('./routes/user.router');
-
 app.use('/users', userRouter);
 
-app.listen(5100, ( () => {
-    console.log('app listen 5100');
+app.listen(PORT, ( () => {
+    console.log(`app listen ${PORT} `);
 } ));

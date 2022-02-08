@@ -20,6 +20,7 @@ module.exports = {
             next(e);
         }
     },
+
     isUserBodyValid: async ( req, res, next ) => {
         try {
             const { error, value } = await userValidator.createUserValidator.validate(req.body);
@@ -39,7 +40,7 @@ module.exports = {
     searchUserByEmail: ( need = true, password = false ) => async ( req, res, next ) => {
         try {
             const { email } = req.body;
-
+            console.log('Email work');
             let userByEmail = await User.findOne({ email }).lean();
 
             if ( userByEmail && !need ) {

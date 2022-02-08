@@ -4,6 +4,7 @@ const { AUTHORIZATION } = require('../configs/constants');
 const { jwtService } = require('../service');
 const O_Auth = require('../dataBase/O_Auth');
 const ErrorHandler = require('../errors/ErrorHandler');
+const { ACCESS, REFRESH } = require('../configs/token-type.enum');
 
 module.exports = {
     isPasswordTrue: async ( req, res, next ) => {
@@ -23,7 +24,35 @@ module.exports = {
         }
     },
 
-    checkAccessToken: async ( req, res, next ) => {
+    // checkAccessToken: async ( req, res, next ) => {
+    //     try {
+    //         const token = req.get(AUTHORIZATION);
+    //
+    //         if ( !token ) {
+    //             throw new ErrorHandler('Invalid token', 401);
+    //         }
+    //
+    //         await jwtService.verifyToken(token);
+    //
+    //         let tokenResponse = await O_Auth.findOne({ access_token: token })
+    //             .lean()
+    //             .populate('user_id');
+    //
+    //         if ( !tokenResponse ) {
+    //             throw new ErrorHandler('Invalid token', 401);
+    //         }
+    //
+    //         tokenResponse = userTokenNormalizator(tokenResponse);
+    //
+    //         req.user = tokenResponse.user_id;
+    //
+    //         next();
+    //     } catch (e) {
+    //         next(e);
+    //     }
+    // },
+
+    chekToken: ( tokenType = ACCESS ) => async ( req, res, next ) => {
         try {
             const token = req.get(AUTHORIZATION);
 
@@ -33,12 +62,16 @@ module.exports = {
 
             await jwtService.verifyToken(token);
 
-            let tokenResponse = await O_Auth.findOne({ access_token: token })
+            let tokenResponse = await O_Auth.findOne({ [tokenType + '_token']: token })
                 .lean()
                 .populate('user_id');
 
             if ( !tokenResponse ) {
                 throw new ErrorHandler('Invalid token', 401);
+            }
+
+            if ( tokenType === REFRESH ) {
+                await O_Auth.deleteOne({ refresh_token: token });
             }
 
             tokenResponse = userTokenNormalizator(tokenResponse);
@@ -51,30 +84,20 @@ module.exports = {
         }
     },
 
-    chekRefreshToken: async ( req, res, next ) => {
+    recordTokenPair: async ( req, res, next ) => {
         try {
-            const token = req.get(AUTHORIZATION);
+            const user = req.user;
 
-            if ( !token ) {
-                throw new ErrorHandler('Invalid token', 401);
-            }
+            const tokenPair = jwtService.generateTokenPair();
 
-            await jwtService.verifyToken(token);
-
-            let tokenResponse = await O_Auth.findOne({ refresh_token: token })
-                .lean()
-                .populate('user_id');
-
-            if ( !tokenResponse ) {
-                throw new ErrorHandler('Invalid token', 401);
-            }
-
-            await O_Auth.deleteOne({ refresh_token: token });
-
-            tokenResponse = userTokenNormalizator(tokenResponse);
-
-            req.user = tokenResponse.user_id;
-
+            await O_Auth.create({
+                ...tokenPair,
+                user_id: user._id
+            });
+            req.data = {
+                user,
+                ...tokenPair
+            };
             next();
         } catch (e) {
             next(e);

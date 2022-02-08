@@ -1,22 +1,18 @@
-const { jwtService } = require('../service/');
-const O_Auth = require('../dataBase/O_Auth');
 
 module.exports = {
-    login: async ( req, res, next ) => {
+    login: ( req, res, next ) => {
         try {
-            const user = req.user;
+            const data = req.data;
 
-            const tokenPair = jwtService.generateTokenPair();
+            res.json(data);
+        } catch (e) {
+            next(e);
+        }
+    },
 
-            await O_Auth.create({
-                ...tokenPair,
-                user_id: user._id
-            });
+    logout: ( req, res, next ) => {
+        try {
 
-            res.json({
-                user,
-                ...tokenPair
-            });
         } catch (e) {
             next(e);
         }
@@ -31,21 +27,11 @@ module.exports = {
         }
     },
 
-    refreshtoken: async ( req, res, next ) => {
+    refreshToken: ( req, res, next ) => {
         try {
-            const user = req.user;
+            const data = req.data;
 
-            const tokenPair = jwtService.generateTokenPair();
-
-            await O_Auth.create({
-                ...tokenPair,
-                user_id: user._id
-            });
-
-            res.json({
-                user,
-                ...tokenPair
-            });
+            res.json(data);
         } catch (e) {
             next(e);
         }

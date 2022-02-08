@@ -3,16 +3,21 @@ const router = require('express')
 
 const authController = require('../controllers/auth.controller');
 const { authMiddleware, userMiddleware } = require('../middlewares');
+const { REFRESH } = require('../configs/token-type.enum');
 
-router.post('/refresh', authMiddleware.chekRefreshToken, authController.refreshtoken);//todo;
+router.post('/refresh',
+    authMiddleware.chekToken(REFRESH),
+    authMiddleware.recordTokenPair,
+    authController.refreshToken);
 
 router.post('/login',
     userMiddleware.searchUserByEmail(true, true),
     authMiddleware.isPasswordTrue,
+    authMiddleware.recordTokenPair,
     authController.login);
 
 router.delete('/delete',
-    authMiddleware.checkAccessToken,
+    authMiddleware.chekToken(),
     authController.deleteAcc);
 
 module.exports = router;

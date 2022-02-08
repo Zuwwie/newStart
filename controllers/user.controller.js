@@ -3,7 +3,7 @@ const passwordService = require('../service/password.service');
 const { userNormalizator } = require('../normalizator/user.password.normalizator');
 
 module.exports = {
-    getUsers: async ( req, res ) => {
+    getUsers: async ( req, res, next ) => {
         try {
             const users = await User.find().lean();
 
@@ -11,8 +11,7 @@ module.exports = {
 
             res.json('All done, pls login.');
         } catch (e) {
-            // next(e);
-            res.json(e);
+            next(e);
         }
     },
 
@@ -41,15 +40,20 @@ module.exports = {
         }
     },
 
-    updateUser: async ( req, res ) => {
-        const { name } = req.body;
-        const user = req.user;
+    updateUser: async ( req, res, next ) => {
+        try {
+            const { name } = req.body;
+            const user = req.user;
 
-        const updateUser = await User.updateOne({ _id: user._id }, { $set: { name } });
-        if ( !updateUser.acknowledged ) {
-            throw new Error('Some wrong');
+            const updateUser = await User.updateOne({ _id: user._id }, { $set: { name } });
+            if ( !updateUser.acknowledged ) {
+                throw new Error('Some wrong');
+            }
+
+            res.json('All done!');
+        } catch (e) {
+            next(e);
         }
-        res.json('All done!');
-    }
-}
-;
+    },
+
+};

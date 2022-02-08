@@ -2,6 +2,7 @@ const User = require('../dataBase/User');
 
 const userValidator = require('../validators/user.validator');
 const { userNormalizator } = require('../normalizator/user.password.normalizator');
+const ErrorHandler = require('../errors/ErrorHandler');
 
 module.exports = {
 
@@ -44,10 +45,11 @@ module.exports = {
             let userByEmail = await User.findOne({ email }).lean();
 
             if ( userByEmail && !need ) {
-                throw new Error('some');
+                throw new ErrorHandler('Email already exist', 404);
             }
+
             if ( need && !userByEmail ) {
-                throw new Error('some');
+                throw new ErrorHandler('Wrong email or password', 404);
             }
 
             if ( !password ) {

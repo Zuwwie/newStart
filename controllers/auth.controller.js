@@ -1,7 +1,9 @@
 module.exports = {
     login: ( req, res, next ) => {
         try {
-            res.json(22);
+            const user = req.user;
+
+            res.json(user);
         } catch (e) {
             next(e);
         }

@@ -22,6 +22,7 @@ module.exports = {
             next(e);
         }
     },
+
     logoutAll: async ( req, res, next ) => {
         try {
             const { _id } = req.user;

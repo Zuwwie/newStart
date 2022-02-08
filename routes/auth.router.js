@@ -16,6 +16,14 @@ router.post('/login',
     authMiddleware.recordTokenPair,
     authController.login);
 
+router.post('/logout',
+    authMiddleware.chekToken(),
+    authController.logout);
+
+router.post('/logoutAll',
+    authMiddleware.chekToken(),
+    authController.logoutAll);
+
 router.delete('/delete',
     authMiddleware.chekToken(),
     authController.deleteAcc);

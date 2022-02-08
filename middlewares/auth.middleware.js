@@ -24,34 +24,6 @@ module.exports = {
         }
     },
 
-    // checkAccessToken: async ( req, res, next ) => {
-    //     try {
-    //         const token = req.get(AUTHORIZATION);
-    //
-    //         if ( !token ) {
-    //             throw new ErrorHandler('Invalid token', 401);
-    //         }
-    //
-    //         await jwtService.verifyToken(token);
-    //
-    //         let tokenResponse = await O_Auth.findOne({ access_token: token })
-    //             .lean()
-    //             .populate('user_id');
-    //
-    //         if ( !tokenResponse ) {
-    //             throw new ErrorHandler('Invalid token', 401);
-    //         }
-    //
-    //         tokenResponse = userTokenNormalizator(tokenResponse);
-    //
-    //         req.user = tokenResponse.user_id;
-    //
-    //         next();
-    //     } catch (e) {
-    //         next(e);
-    //     }
-    // },
-
     chekToken: ( tokenType = ACCESS ) => async ( req, res, next ) => {
         try {
             const token = req.get(AUTHORIZATION);
@@ -75,7 +47,7 @@ module.exports = {
             }
 
             tokenResponse = userTokenNormalizator(tokenResponse);
-
+            req.token = tokenResponse;
             req.user = tokenResponse.user_id;
 
             next();

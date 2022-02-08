@@ -9,4 +9,6 @@ router.get('/:user_id', userController.getUserById);
 
 router.post('/', userMiddleware.isUserBodyValid, userMiddleware.createUserMiddleware, userController.createUser);
 
+router.put('/', userMiddleware.searchUserByEmail(), userController.updateUser);
+
 module.exports = router;

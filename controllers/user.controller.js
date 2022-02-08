@@ -5,9 +5,11 @@ const { userNormalizator } = require('../normalizator/user.password.normalizator
 module.exports = {
     getUsers: async ( req, res ) => {
         try {
-            const users = await User.find();
+            const users = await User.find().lean();
 
-            res.json(users);
+            users.forEach(user => userNormalizator(user));
+
+            res.json('All done, pls login.');
         } catch (e) {
             // next(e);
             res.json(e);
@@ -15,10 +17,9 @@ module.exports = {
     },
 
     getUserById: async ( req, res ) => {
-        console.log(req.params);
         const { user_id } = req.params;
-        let user = await User.findById(user_id).lean();//todo
 
+        let user = await User.findById(user_id).lean();
         user = userNormalizator(user);
 
         res.json(user);
@@ -26,7 +27,6 @@ module.exports = {
 
     createUser: async ( req, res, next ) => {
         try {
-            console.log(req.body);
             const password = await passwordService.hash(req.body.password);
 
             const newUser = await User.create({ ...req.body, password });
@@ -37,10 +37,15 @@ module.exports = {
         }
     },
 
-// updateUser: async (req, res) => {
-//     const updateUser = req.body;
-//
-//     res.json(updateUser);
-// }
+    updateUser: async ( req, res ) => {
+        const { name } = req.body;
+        const user = req.user;
+
+        const updateUser = await User.updateOne({ _id: user._id }, { $set: { name } });
+        if ( !updateUser.acknowledged ) {
+            throw new Error('Some wrong');
+        }
+        res.json('All done!');
+    }
 }
 ;

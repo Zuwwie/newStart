@@ -15,7 +15,6 @@ module.exports = {
             if ( findUser ) {
                 throw new Error('User is registered');
             }
-
             next();
         } catch (e) {
             next(e);

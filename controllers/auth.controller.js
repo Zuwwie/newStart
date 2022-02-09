@@ -1,4 +1,4 @@
-const O_Auth = require('../dataBase/O_Auth');
+const { O_Auth, User } = require('../dataBase');
 
 module.exports = {
     login: ( req, res, next ) => {
@@ -35,8 +35,12 @@ module.exports = {
         }
     },
 
-    deleteAcc: ( req, res, next ) => {
+    deleteAcc: async ( req, res, next ) => {
         try {
+            const { _id } = req.user;
+            console.log(req.user._id);
+
+            await User.deleteOne({ _id });
 
             res.json('User delete success');
         } catch (e) {

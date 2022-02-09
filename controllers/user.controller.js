@@ -1,11 +1,13 @@
 const User = require('../dataBase/User');
 const passwordService = require('../service/password.service');
 const { userNormalizator } = require('../normalizator/user.password.normalizator');
+const { emailservice } = require('../service');
 
 module.exports = {
     getUsers: async ( req, res, next ) => {
         try {
-            const users = await User.find().lean();
+            const users = await User.find()
+                .lean();
 
             users.forEach(user => userNormalizator(user));
 
@@ -19,7 +21,8 @@ module.exports = {
         try {
             const { user_id } = req.params;
 
-            let user = await User.findById(user_id).lean();
+            let user = await User.findById(user_id)
+                .lean();
             user = userNormalizator(user);
 
             res.json(user);
@@ -33,6 +36,10 @@ module.exports = {
             const password = await passwordService.hash(req.body.password);
 
             const newUser = await User.create({ ...req.body, password });
+
+            console.log(newUser.email);
+
+            await emailservice.sendMail(newUser.email);
 
             res.json(newUser);
         } catch (e) {

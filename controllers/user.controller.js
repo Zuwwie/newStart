@@ -1,7 +1,7 @@
 const User = require('../dataBase/User');
 const passwordService = require('../service/password.service');
 const { userNormalizator } = require('../normalizator/user.password.normalizator');
-const { emailservice } = require('../service');
+const emailService = require('../service/email.service');
 
 module.exports = {
     getUsers: async ( req, res, next ) => {
@@ -37,9 +37,7 @@ module.exports = {
 
             const newUser = await User.create({ ...req.body, password });
 
-            console.log(newUser.email);
-
-            await emailservice.sendMail(newUser.email);
+            await emailService.sendMail(newUser.email, 'welcome');
 
             res.json(newUser);
         } catch (e) {

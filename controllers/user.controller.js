@@ -2,6 +2,8 @@ const User = require('../dataBase/User');
 const passwordService = require('../service/password.service');
 const { userNormalizator } = require('../normalizator/user.password.normalizator');
 const emailService = require('../service/email.service');
+const { WELCOME } = require('../configs/email-action.enum');
+const ErrorHandler = require('../errors/ErrorHandler');
 
 module.exports = {
     getUsers: async ( req, res, next ) => {
@@ -35,9 +37,11 @@ module.exports = {
         try {
             const password = await passwordService.hash(req.body.password);
 
-            const newUser = await User.create({ ...req.body, password });
+            let newUser = await User.create({ ...req.body, password });
 
-            await emailService.sendMail(newUser.email, 'welcome');
+            newUser = userNormalizator(newUser.toObject());
+
+            await emailService.sendMail(newUser.email, WELCOME, { user: newUser });
 
             res.json(newUser);
         } catch (e) {
@@ -52,7 +56,7 @@ module.exports = {
 
             const updateUser = await User.updateOne({ _id: user._id }, { $set: { name } });
             if ( !updateUser.acknowledged ) {
-                throw new Error('Some wrong');
+                throw new ErrorHandler('Some wrong', 404);
             }
 
             res.json('All done!');

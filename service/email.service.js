@@ -19,10 +19,10 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-const sendMail = async ( userMail, emailAction ) => {
+const sendMail = async ( userMail, emailAction, context = {} ) => {
     const templateInfo = allTemplates[emailAction];
 
-    const html = await templateParser.render(templateInfo.templateName);
+    const html = await templateParser.render(templateInfo.templateName, context.user);
 
     return transporter.sendMail({
         from: 'Nazar',

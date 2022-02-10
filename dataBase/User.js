@@ -28,6 +28,11 @@ const userSchema = new Schema({
             ADMIN
         ]
     }
-}, { timestamps: true });
+}, { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } });
+
+userSchema.virtual('fullName')
+    .get(function() {
+        return `${this.name} ${this.role}`;
+    });
 
 module.exports = model('user', userSchema);

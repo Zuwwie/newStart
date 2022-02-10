@@ -25,4 +25,6 @@ module.exports = {
         }
     },
 
+    generateActionToken: () => jwt.sign({}, JWT_ACCESS_SECRET, { expiresIn: '24h' }),
+
 };

@@ -28,4 +28,11 @@ router.delete('/delete',
     authMiddleware.chekToken(),
     authController.deleteAcc);
 
+router.post('/password/forgot',
+    authController.sendMailForgotPassword );
+
+router.post('/password/forgot/set',
+    authMiddleware.chekActionToken(),
+    authController.setNewPassword );
+
 module.exports = router;

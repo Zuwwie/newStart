@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport({
 const sendMail = async ( userMail, emailAction, context = {} ) => {
     const templateInfo = allTemplates[emailAction];
 
-    const html = await templateParser.render(templateInfo.templateName, context.user);
+    const html = await templateParser.render(templateInfo.templateName, context);
 
     return transporter.sendMail({
         from: 'Nazar',

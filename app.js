@@ -1,14 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
-require('dotenv').config();
+const cors = require('cors');
+require('dotenv')
+    .config();
 
 const { authRouter, userRouter } = require('./routes');
 
-const { MONGO_CONNECT_URL, PORT } = require('./configs/config');
+const { ALLOWED_ORIGIN, MONGO_CONNECT_URL, PORT, NODE_EV } = require('./configs/config');
+const ErrorHandler = require('./errors/ErrorHandler');
 
 const app = express();
 
 mongoose.connect(MONGO_CONNECT_URL);
+app.use(cors({ origin: _configureCors }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -27,3 +31,17 @@ app.use('*', ( err, req, res, next ) => {
 app.listen(PORT, ( () => {
     console.log(`app listen ${PORT} `);
 } ));
+
+function _configureCors( origin, callback ) {
+    if ( NODE_EV === 'dev' ) {
+        return callback(null, true);
+    }
+
+    const whiteList = ALLOWED_ORIGIN.split(';');
+
+    if ( !whiteList.includes(origin) ) {
+        return callback(new ErrorHandler('CORS is not allowed'), false);
+    }
+
+    return callback(null, true);
+}

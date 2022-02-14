@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose');
 const { USER, ADMIN } = require('../configs/user-roles.enum');
+const { passwordService } = require('../service');
 
 const userSchema = new Schema({
     name: {
@@ -29,6 +30,14 @@ const userSchema = new Schema({
         ]
     }
 }, { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } });
+
+userSchema.statics = {
+    async createUserWithHashPassword( userObject ) {
+        const hashedPassword = await passwordService.hash(userObject.password);
+
+        return this.create({ ...userObject, password: hashedPassword });
+    }
+};
 
 userSchema.virtual('fullName')
     .get(function() {

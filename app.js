@@ -12,6 +12,7 @@ const { authRouter, userRouter } = require('./routes');
 const { ALLOWED_ORIGIN, MONGO_CONNECT_URL, PORT, NODE_EV } = require('./configs/config');
 const ErrorHandler = require('./errors/ErrorHandler');
 const checkDefaultData = require('./util/default-data.util');
+const startCron = require('./cron/cron');
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use('*', ( err, req, res, next ) => {
 app.listen(PORT, ( () => {
     console.log(`app listen ${PORT} `);
     checkDefaultData();
+    startCron();
 } ));
 
 

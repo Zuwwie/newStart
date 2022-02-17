@@ -86,13 +86,13 @@ module.exports = {
             await jwtService.verifyToken(token);
 
             let tokenResponse = await ActionToken.findOne({ [tokenType + '_token']: token })
-                .lean()
                 .populate('user_id');
 
             if ( !tokenResponse ) {
                 throw new ErrorHandler('Invalid token', 401);
             }
-            tokenResponse = userTokenNormalizator(tokenResponse);
+
+            tokenResponse = userTokenNormalizator(tokenResponse.toObject());
 
             req.token = tokenResponse;
             req.user = tokenResponse.user_id;

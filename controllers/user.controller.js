@@ -1,19 +1,20 @@
 const User = require('../dataBase/User');
 const passwordService = require('../service/password.service');
-const { userNormalizator } = require('../normalizator/user.password.normalizator');
 const emailService = require('../service/email.service');
+const userService = require('../service/user.service');
+const { userNormalizator } = require('../normalizator/user.password.normalizator');
+
 const { WELCOME } = require('../configs/email-action.enum');
 const ErrorHandler = require('../errors/ErrorHandler');
 
 module.exports = {
     getUsers: async ( req, res, next ) => {
         try {
-            const users = await User.find()
-                .lean();
+            const users = await userService.getAllUsers(req.query);
 
-            users.forEach(user => userNormalizator(user));
+            users.forEach(user => userNormalizator(user.toObject()));
 
-            res.json('All done, pls login.');
+            res.json(users);
         } catch (e) {
             next(e);
         }
